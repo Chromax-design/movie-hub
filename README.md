@@ -4,7 +4,7 @@ This site was built with react, tailwind and axios http request
 # Api used 
 https://www.omdbapi.com
 
-#Live version
+# Live version
 https://chromax-movie-hub.netlify.app/
 
 # React + Vite
