@@ -26,6 +26,10 @@ const ImgContainer = styled.div`
     transition:
       transform 0.5s ease,
       filter 0.5s ease;
+
+    @media (max-width: 768px) {
+      filter: brightness(0.3);
+    }
   }
 
   span {
@@ -33,13 +37,21 @@ const ImgContainer = styled.div`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 2.5rem;
-    opacity: 0;
-    transition: opacity 0.5s ease;
+    color: #ffd700;
+    font-size: 3rem;
+    opacity: 0.6;
+    transition:
+      opacity 0.5s ease,
+      font-size 0.5s ease;
+
+    @media (max-width: 768px) {
+      opacity: 1;
+    }
   }
 
   &:hover > span {
     opacity: 1;
+    font-size: 3.5rem;
     cursor: pointer;
   }
 
@@ -55,8 +67,8 @@ const InfoContainer = styled.div`
 
   h3 {
     text-align: left;
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 1.2rem;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -64,15 +76,15 @@ const InfoContainer = styled.div`
 
   p {
     display: -webkit-box;
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: 400;
     overflow: hidden;
   }
 
   & > * + * {
-    margin-top: 0.5rem;
+    margin-top: 0.6rem;
   }
 `;
 
