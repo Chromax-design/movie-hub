@@ -76,6 +76,10 @@ const Main = styled.main`
     gap: 1rem;
     max-width: 85%;
     margin: 1rem auto;
+
+    @media (max-width: 768px) {
+      max-width: 100%;
+    }
   }
 
   h2 {
