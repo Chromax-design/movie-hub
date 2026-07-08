@@ -28,7 +28,7 @@ const ImgContainer = styled.div`
       filter 0.5s ease;
 
     @media (max-width: 768px) {
-      filter: brightness(0.3);
+      filter: brightness(0.5);
     }
   }
 
