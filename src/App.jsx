@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import MovieCard from "./components/MovieCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
-
-const apiKey = import.meta.env.VITE_APP_API_KEY;
+import { api } from "./api/api";
+import SkeletonLoader from "./components/SkeletonLoader";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -49,7 +48,6 @@ const Header = styled.header`
 
       &::placeholder {
         font-style: italic;
-        text-transform: capitalize;
         letter-spacing: 1px;
       }
     }
@@ -76,7 +74,7 @@ const Main = styled.main`
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
-    max-width: 75rem;
+    max-width: 85%;
     margin: 1rem auto;
   }
 
@@ -92,31 +90,50 @@ const Footer = styled.footer`
   text-align: center;
   text-transform: capitalize;
   padding: 1rem;
+
+  & > * + * {
+    margin-top: 0.5rem;
+  }
 `;
 
 function App() {
+  const [loading, setLoading] = useState(false);
   const [movies, setMovies] = useState([]);
-  const [term, setTerm] = useState("");
+  const [searchTerm, setTerm] = useState("");
 
-  const getData = async (title) => {
+  const searchMovies = async (title) => {
+    if (!title.trim()) return;
+
+    setLoading(true);
     try {
-      const res = await axios.get(
-        `https://www.omdbapi.com/?apikey=${apiKey}&s=${title}`,
-      );
-      const movies = res?.data?.Search.filter((movie) => movie.Poster !== null);
-      console.log(movies);
-      setMovies(movies);
+      const { data } = await api.get("/search/movie", {
+        params: {
+          query: title,
+          include_adult: false,
+          language: "en-US",
+          page: 1,
+        },
+      });
+
+      setMovies(data.results);
     } catch (error) {
       console.log(error);
+      setMovies([]);
+    } finally {
+      setLoading(false);
     }
   };
+
   useEffect(() => {
-    getData("love");
+    const DEFAULT_SEARCH_TERM = "love";
+    searchMovies(DEFAULT_SEARCH_TERM);
   }, []);
 
-  function handleClick() {
-    getData(term);
-  }
+  const handleSearch = () => {
+    const query = searchTerm.trim();
+    if (!query) return;
+    searchMovies(query);
+  };
 
   return (
     <Container>
@@ -125,28 +142,32 @@ function App() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            handleClick();
+            handleSearch();
           }}
         >
           <input
             type="text"
             placeholder="Search for movies"
-            value={term}
+            value={searchTerm}
             onChange={(e) => {
               setTerm(e.target.value);
             }}
+            spellCheck="false"
+            autoComplete="off"
           />
-          <Icon>
-            <FontAwesomeIcon icon={faMagnifyingGlass} onClick={handleClick} />
+          <Icon onClick={handleSearch}>
+            <FontAwesomeIcon icon={faMagnifyingGlass} />
           </Icon>
         </form>
       </Header>
 
       <Main>
-        {movies?.length > 0 ? (
+        {loading ? (
+          <SkeletonLoader />
+        ) : movies?.length > 0 ? (
           <section>
             {movies.map((item) => {
-              return <MovieCard movie={item} key={item.imdbID} />;
+              return <MovieCard movie={item} key={item.id} />;
             })}
           </section>
         ) : (
@@ -154,7 +175,15 @@ function App() {
         )}
       </Main>
 
-      <Footer>copyright &copy; {new Date().getFullYear()}</Footer>
+      <Footer>
+        <p>copyright &copy; {new Date().getFullYear()} Movie Hub</p>
+        <p>
+          powered by{" "}
+          <a href="https://www.themoviedb.org" target="_blank">
+            TMDB
+          </a>
+        </p>
+      </Footer>
     </Container>
   );
 }
